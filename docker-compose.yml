@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    image: php:8.3-fpm
+    container_name: app
+    volumes:
+      - .:/var/www/html
+    networks:
+      - laravel
+
+  db:
+    image: mysql:8.0
+    container_name: root
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel_acl
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - laravel
+
+  web:
+    image: nginx:alpine
+    container_name: web
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./nginx:/etc/nginx/conf.d  
+    networks:
+      - laravel
+    depends_on:
+      - app
+
+networks:
+  laravel:
+
+volumes:
+  dbdata:
